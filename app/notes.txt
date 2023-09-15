@@ -1,0 +1,10 @@
+- kubectl apply -f od-pvc.yaml
+- kubectl apply -f od-gpu-pod.yaml
+
+- now copy be_app.py and detection.py to /od_app (persistent)
+
+- kubectl logs -f od-gpu-pod
+
+- kubectl port-forward od-gpu-pod 5000:5000
+- kubectl port-forward od-gpu-pod 8888:8888 (jupyter)
+

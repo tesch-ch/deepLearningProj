@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: od-gpu-pod
+spec:
+  restartPolicy: Never
+  containers:
+    - name: transformers-gpu-container
+      # image: huggingface/transformers-pytorch-gpu
+      image: huggingface/transformers-all-latest-torch-nightly-gpu
+      ports:
+        - containerPort: 8888
+        - containerPort: 5000
+      volumeMounts:
+      - name: od-volume  # This should match the volume name defined below
+        mountPath: /od_app  # Specify the mount path inside the container
+      command:
+      - sh
+      - -c
+      - |
+        pip install jupyter && \
+        cd /od_app && \
+        jupyter notebook --ip=0.0.0.0 --no-browser --NotebookApp.token='' --allow-root
+      resources:
+          requests:
+            nvidia.com/gpu: 1 # requesting 1 GPU
+            cpu: 4
+            memory: 24Gi
+          limits:
+            nvidia.com/gpu: 1
+            memory: 24Gi
+            cpu: 4
+  volumes:
+  - name: od-volume  # This should match the volume name used in the container
+    persistentVolumeClaim:
+      claimName: od-pvc
+  nodeSelector:
+    gpu: v100
